@@ -1,0 +1,4 @@
+flask
+Flask_cors
+firebase_admin
+functools

@@ -17,7 +17,7 @@ db = firestore.client()
 
 def verify_token(f):
     @wraps(f)
-    
+
     def decorated(*args, **kwargs):
         token = request.headers.get("Authorization")
         if not token:
@@ -25,13 +25,13 @@ def verify_token(f):
         try:
             if token.startswith("Bearer"):
                 token = token.split(" ")[1]
- 
-            decoded_token = auth.verify_id_token(token, clock_skew_seconds=30)
+
+            decoded_token = auth.verify_id_token(token)
             request.user = decoded_token
 
         except Exception as e:
             return jsonify({ "error" : "Something went wrong" })
-        
+
         return f(*args , **kwargs)
     return decorated
 
@@ -44,7 +44,7 @@ def get_todo():
     userE = request.user["email"]
     todos = db.collection("users").document(userE).collection("todos").stream()
     todolist = [{  **t.to_dict() , "id" : t.id } for t in todos   ] 
-    
+
     return jsonify(todolist)
 
 
@@ -58,7 +58,7 @@ def add_todo():
         "title" : data["title"],
         "done" : data['done']
     })
-    
+
     return jsonify({"message" : "task added !"})
 
 
@@ -78,6 +78,8 @@ def delete_todo(id):
     userE = request.user["email"]
     db.collection('users').document(userE).collection("todos").document(id).delete()
     return jsonify({"message" : "task deleted !"})
+
+
 
 
 if __name__ == "__main__":

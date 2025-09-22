@@ -26,7 +26,7 @@ def verify_token(f):
             if token.startswith("Bearer"):
                 token = token.split(" ")[1]
  
-            decoded_token = auth.verify_id_token(token)
+            decoded_token = auth.verify_id_token(token, clock_skew_seconds=30)
             request.user = decoded_token
 
         except Exception as e:
